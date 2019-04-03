@@ -1,0 +1,804 @@
+
+<!DOCTYPE html> 
+<html style="height:100%"> 
+<head> 
+<title>Korea Land Information System</title>
+<!-- <link rel="icon" type="image/ico" href="icons/AWCM_logo.ico"> -->
+<!-- Use correct character set. -->
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" /> 
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+<!-- Tell IE to use the latest, best version. -->
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!-- Cesium part -->
+<link rel="stylesheet" href="http://210.92.123.156:8080/Build/Cesium/Widgets/widgets.css">
+<link rel="stylesheet" href="http://210.92.123.156:8080/Apps/CesiumViewer/CesiumViewer.css">
+<!-- For Menu (KLDAS/ALDAS)  -->
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" id="bootstrap-css">
+<link rel="stylesheet" type="text/css" href="http://210.92.123.156:8080/Apps/custom_css/menu-bootstrap.css">
+<link rel="stylesheet" href="https://openlayers.org/en/v4.0.1/css/ol.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="http://210.92.123.156:8080/Apps/custom_css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="http://210.92.123.156:8080/Apps/custom_css/custom.css">
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="http://210.92.123.156:8080/Apps/klis/js/ol3gm_js_v0.19.0/ol3gm.css">
+<link rel="stylesheet" href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css">
+
+<!-- Cesium part -->
+<script src="http://210.92.123.156:8080/Build/Cesium/Cesium.js"></script>
+<script src="http://210.92.123.156:8080/Apps/klis/js/setStringFormat.js"></script>
+<!-- <script src="klis/js/cesium_klis.js"></script> -->
+
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyCTN3rYFeoyUMSkukPyaCaW0DP9vvD9gbs"></script>
+<script src="http://210.92.123.156:8080/Apps/klis/js/ol3gm_js_v0.19.0/ol3gm.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script type="text/javascript" src="http://210.92.123.156:8080/Apps/klis/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="http://210.92.123.156:8080/Apps/klis/js/data_extraction.js"></script>
+<script type="text/javascript" src="http://210.92.123.156:8080/Apps/klis/js/MainFunc.js"></script>
+<script type="text/javascript" src="http://210.92.123.156:8080/Apps/klis/js/GetDate.js"></script>
+<script src="http://dev.openlayers.org/OpenLayers.js"></script>
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+<style>
+<!-- WebGL part -->
+<!-- @import url(../Build/Cesium/Widgets/widgets.css); -->
+
+#cesiumContainer {
+	position: absolute;
+	z-index: 999;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+}
+.cesium-viewer-bottom{
+	display:none;
+}
+.cesium-widget{
+	width:100%;
+}
+.cesium-widget canvas{
+    width: 100%;
+    height: 100%;
+}
+
+#DownOrVisual .nav-pills > li > a {
+  border-radius: 4px 4px 0 0 ;
+}
+#map_canvas_2{
+	height: 100%;
+}
+body {
+	font-family: 'Nanum Barun Gothic', sans-serif;
+}
+span {
+	font-family: 'Nanum Barun Gothic', sans-serif;
+}
+div {
+	font-family: 'Nanum Barun Gothic', sans-serif;
+}
+.half {
+	  padding: 0 0px;
+	  width: 50%;
+	  float: left;
+	  position: relative;
+    }
+#map_canvas_3-1, #map_canvas_3-2{
+	height: 830px;
+}
+.meta-table {
+	border-collapse: collapse;
+	font-size: 12px;
+	color: black;
+	background-color: #73d4f1c4;
+	border: solid gainsboro;
+	width: 100%;
+}
+
+.meta-table th, .meta-table td {
+	text-align: left;
+	padding: 2px;
+}
+.meta-table tr {
+	height: 22px;
+}
+
+.meta-table tr:nth-child(even){background-color: #f2f2f2}
+
+.status-bar{
+	position : absolute;
+	width: 80%;
+	height: 7%;
+	background-color: #cdcdcd;
+	border-color : gray;
+	border-radius: 4px;
+	border: 1px solid transparent;
+	box-sizing : border-box;
+	z-index : 999;
+	margin-top: 863px;
+}
+
+.noInfobar{
+	position: absolute;
+	right: 21.5%;
+	background: rgba(42,42,42,0.8);
+	color: white;
+	padding: 10px;
+	border-radius: 4px;
+	height: 200px;
+	width: 250px;
+	text-align: center;
+	z-index: 5;
+}
+
+.infoBtn{
+	position: absolute;
+	z-index: 999;
+	top: 70px;
+	right: 21.5%;
+}
+
+</style>
+   
+<script type="text/javascript">
+  // Define JS variables from PHP arrays
+  var year_initial = 2018;
+var year_initial_orig = 2018;
+var month_initial = 2;
+var month_initial_orig = 2;
+var day_initial = 1;
+var day_initial_orig = 1;
+var year_final = 2018;
+var year_final_orig = 2018;
+var month_final = 2;
+var month_final_orig = 2;
+var day_final = 1;
+var day_final_orig = 1;
+
+var viewer;
+var ia_wms;
+
+var nowFolder;
+var variable;
+var timerId;
+
+var strCurrentTab = "KLDAS";
+
+	function initialize() 
+	{
+		init_Date();
+		
+		Cesium.BingMapsApi.defaultKey = 'Ase9t4geb6UXpss2yU3JOBNhXOK8N8XbQTc5SsuC5wOtTW2dqr9HHNjavpYQ29tM';
+		
+		// ************* UI 배열 깨지는 현상 있었는데 아래 두줄 덕ㅇㅔ 해결
+		var cesiumContainer = document.getElementById("cesiumContainer").style;
+		cesiumContainer.width='79%'; cesiumContainer.height='100%'; //this works
+		
+		var credit = new Cesium.Credit('Title', 'img/hermesys.jpg');
+		
+		viewer = new Cesium.Viewer('cesiumContainer',{ 
+						imageryProvider : Cesium.BingMapsImageryProvider({
+							url : '//dev.virtualearth.net',
+							mapStyle : Cesium.BingMapsStyle.AERIAL_WITH_LABELS
+						}),
+						<!-- imageryProvider : Cesium.createOpenStreetMapImageryProvider({ -->
+							<!-- url: 'https://a.tile.openstreetmap.org/' -->
+						<!-- }), -->
+					baseLayerPicker : false,
+					homeButton: false
+					<!-- proxy: new Cesium.DefaultProxy('/proxy/') -->
+				});
+		// basemap 변경 전
+		<!-- viewer = new Cesium.Viewer('cesiumContainer',{  -->
+				<!-- imageryProvider : Cesium.createTileMapServiceImageryProvider({ -->
+				<!-- url : Cesium.buildModuleUrl('Assets/Textures/NaturalEarthII') -->
+			 <!-- }), -->
+			<!-- baseLayerPicker : false, -->
+			<!-- homeButton: false -->
+		<!-- }); -->
+		
+		// setView(for Center)
+		viewer.camera.setView({
+			destination : Cesium.Cartesian3.fromDegrees(
+				127,
+				36,
+				8044800
+				<!-- Cesium.Ellipsoid.WGS84.cartesianToCartographic(viewer.camera.position).height -->
+			)
+		});
+		
+		$(viewer._animation.container).css('visibility', 'hidden'); 
+		$(viewer._timeline.container).css('visibility', 'hidden'); 
+		viewer.forceResize();
+		
+		
+
+		
+		var ia_wms = new Cesium.WebMapServiceImageryProvider({
+			url : 'http://1.227.166.166:9133/geoserver/ALDAS_CLSM_Streamflow/wms',
+			layers : 'LIS_HIST_201801050000.Streamflow',
+			parameters : {
+				//transparent : true,
+				format : 'image/png'
+			}
+			//,proxy: new Cesium.DefaultProxy('/proxy/')
+		});
+
+		viewer.imageryLayers.addImageryProvider(ia_wms);
+		
+	
+	}
+	
+	function init_Date(){
+		
+		var today = getDate(1);
+		var date_piece = today.split('-');
+		
+		$("#year_initial").val(date_piece[0]);
+		$("#month_initial").val(date_piece[1]);
+		$("#day_initial").val(date_piece[2]);
+		
+		$("#year_final").val(date_piece[0]);
+		$("#month_final").val(date_piece[1]);
+		$("#day_final").val(date_piece[2]);
+		
+		$("#year_comp01").val(date_piece[0]);
+		$("#month_comp01").val(date_piece[1]);
+		$("#day_comp01").val(date_piece[2]);
+		
+		$("#year_comp02").val(date_piece[0]);
+		$("#month_comp02").val(date_piece[1]);
+		$("#day_comp02").val(date_piece[2]);
+		
+	}
+	
+	function splitDate(date){
+		var date_piece = date.split('-');
+	}
+
+  $(document).ready(function() {
+
+    // Initialize Jquery UI slider
+    $( "#animation-slider" ).slider();
+
+    initialize();
+	
+    //Collapsible sidebar elements
+    $(".nav-header").click(function() {
+      $(this).parent().find(".data-form-block").toggle();
+    });
+
+    $("#clear_all").click(function() {
+      var current_setting = $("ul.data-extraction li.active>a").attr('id');
+      if(""+current_setting == "none") {
+        clear_all_overlays();
+        // Turn off the active chosen datasets
+        $("ul.datalist>li").removeClass("active");
+        $("ul.datalist>li>ul.dropdown-menu>li").removeClass("active");
+        $("ul.datalist>li>a>i").removeClass("icon-ok");
+        $("ul.datalist>li>ul.dropdown-menu>li>a>i").removeClass("icon-ok");
+      }
+      else if(""+current_setting == "point") {
+        if($("#popUpDiv").is(":visible")) 
+          Hide_Data_Extraction_Popup();
+        if($("#ajax_request_load").is(":visible"))
+          $("#ajax_request_load").hide();
+      }
+      else if(""+current_setting == "spatial") {
+        Update_Listeners('spatial');
+        $("input[name='variables_spatial_data[]']:checked").prop('checked', false);
+        Update_Spatial_Data_Display();
+      }
+    });
+    // Validation for date entry
+    $( "input[id='day_initial']" ).change(function() {
+      if($(this).val() < 1 || $(this).val() > 31)
+        $(this).val(day_initial);
+    });
+    $( "input[id='day_final']" ).change(function() {
+      if($(this).val() < 1 || $(this).val() > 31)
+        $(this).val(day_final);
+    });
+    $( "input[id='month_initial']" ).change(function() {
+      if($(this).val() < 1 || $(this).val() > 12)
+        $(this).val(month_initial);
+    });
+    $( "input[id='month_final']" ).change(function() {
+      if($(this).val() < 1 || $(this).val() > 12)
+        $(this).val(month_final);
+    });
+    $( "input[id='year_initial']" ).change(function() {
+      if($(this).val() < 1948 || $(this).val() > 2020)
+        $(this).val(year_initial);
+    });
+    $( "input[id='year_final']" ).change(function() {
+      if($(this).val() < 1948 || $(this).val() > 2020)
+        $(this).val(year_final);
+    });
+
+    // When you click a dataset from a dropdown menu...
+    // Check if it's different than the previously chosen one. If so, do a bunch of stuff.
+    $("ul.datalist>li>ul.dropdown-menu>li>a").click(function() {
+      if(!$(this).parent().hasClass("active")) {
+        $("ul.datalist>li").removeClass("active");
+        $("ul.datalist>li>ul.dropdown-menu>li").removeClass("active");
+        $("ul.datalist>li>a>i").removeClass("icon-ok");
+        $("ul.datalist>li>ul.dropdown-menu>li>a>i").removeClass("icon-ok");
+
+        $(this).parent().addClass("active");
+        $(this).parent().parent().parent().addClass("active");
+        $(this).find('i').addClass("icon-ok");
+        $(this).parent().parent().parent().find("a.dropdown-toggle>i").addClass("icon-ok");
+        
+        <!-- if ($("#InteractiveInterface").hasClass("active")) { -->
+          <!-- update_animation(); } -->
+        <!-- else { -->
+          <!-- update_basic(); } -->
+      }
+    });
+
+    // Selecting spatial data types from dropdown menus
+    $("#Variable ul.datalist>li>ul.dropdown-menu>li>a").click(function() {
+      var copyLi = $(this).parent().clone();
+	  <!-- if($("#download").parent().hasClass("active")) { -->
+		  <!-- copyLi.appendTo("ul#currently-selected-vars"); -->
+		  <!-- copyLi.find('a>i').remove(); -->
+		  <!-- //copyLi.find('a').prepend(copyLi.find('a').attr('id').split('--')[0] + ': '); // give new element full ID including datatype -->
+		  <!-- copyLi.find('a').prepend("<i class='icon-remove'></i>"); -->
+
+		  <!-- // need to bind the removal click listener here, because the element did not exist at page load -->
+		  <!-- copyLi.find('a').click(function() { -->
+			<!-- $("ul.datalist>li>ul.dropdown-menu>li>a#" + $(this).attr('id')).parent().show(); -->
+			<!-- $(this).parent().remove(); -->
+			<!-- Update_Spatial_Data_Display(); -->
+			<!-- }); -->
+      
+		  <!-- $(this).parent().hide(); -->
+		  <!-- Update_Spatial_Data_Display(); -->
+	  <!-- } -->
+	  <!-- else if($("#visualization").parent().hasClass("active")) { -->
+		  variable = copyLi.find('a').text().split('-')[0];
+		  // console.log(variable);
+		  if(variable.contains("Evap"))
+			nowFolder = "jj";
+		  if(variable.contains("SoilMoist"))
+			nowFolder = "tt";
+		  
+		  $("#pause-or-continue").removeClass("glyphicon glyphicon-play");
+		  $("#pause-or-continue").addClass("glyphicon glyphicon-pause");
+		  startLoop(variable, nowFolder);
+	  <!-- } -->
+    });
+	
+	$("#Comparing ul.datalist>li>ul.dropdown-menu>li>a").click(function() {
+		var copyLi = $(this).parent().clone();
+		$("ul#currently-selected-vars>li").remove();
+		copyLi.appendTo("ul#currently-selected-vars");
+		  copyLi.find('a>i').remove();
+		  copyLi.find('a').prepend("<i class='icon-remove'></i>");
+
+		  // need to bind the removal click listener here, because the element did not exist at page load
+		  copyLi.find('a').click(function() {
+			$("ul.datalist>li>ul.dropdown-menu>li>a#" + $(this).attr('id')).parent().show();
+			$(this).parent().remove();
+			Update_Spatial_Data_Display();
+			});
+      
+		  <!-- $(this).parent().hide(); -->
+		  Update_Spatial_Data_Display();
+	});
+
+    // Animation play/pause buttons
+    $( "#pause-or-continue").click(function() {
+      if($(this).hasClass("glyphicon glyphicon-pause")) {
+        $(this).removeClass("glyphicon glyphicon-pause");
+        $(this).addClass("glyphicon glyphicon-play");
+		clearTimeout(timerId);
+      } else {
+        $(this).removeClass("glyphicon glyphicon-play");
+        $(this).addClass("glyphicon glyphicon-pause");
+		startLoop(variable, nowFolder);
+      }
+    });
+	
+	$("#autoplay-stop").click(function(){
+		$("#pause-or-continue").removeClass("glyphicon glyphicon-pause");
+		$("#pause-or-continue").addClass("glyphicon glyphicon-play");
+		nowFolder = "";
+		variable = "";
+		clearMap();
+	});
+
+    $("#email_spatial_data").on('keyup change', function() {
+      Update_Spatial_Data_Display();
+    });
+
+    $("textarea#input3").on('keyup', function() {
+      var remaining = $(this).attr('maxlength') - $(this).val().length;
+      $('#feedback-num-chars-remaining').text(remaining);
+    });
+	
+	<!-- Popover of Data Details -->
+	$('.infoBtn_s').click(function(){
+		$('#infobox').css("display","block");
+		$('.infoBtn_h').css("display","block");
+		$('.infoBtn_s').css("display","none");
+			
+	});
+	$('.infoBtn_h').click(function(){
+		$('#infobox').css("display","none");
+		$('.infoBtn_h').css("display","none");
+		$('.infoBtn_s').css("display","block");
+			
+	}); // 메타테이블과 날짜정보 정지하면 없어지는거 수정
+
+	$(function () {
+	  $('[data-toggle="tooltip"]').tooltip()
+	});
+    // Load the default dataset
+    <!-- $("ul.datalist>li>ul.dropdown-menu>li>a#" + DEFAULT_ANIMATION_DATASET).click(); -->
+  })
+
+
+</script>
+<script>
+function clearMap(){
+	stopImg(timerId);
+	
+	// clearLayer
+	var viewerLayers = viewer.imageryLayers;
+	var addedLayer = viewerLayers.get(1);
+	viewerLayers.remove(addedLayer);
+}
+function doComparing(){
+	
+	strCurrentTab = $(".row>.breadcrumb>.btn-primary").text();
+	
+	
+}
+</script>
+</head> 
+
+<body style="width:100%; height:100%">
+<div class="container-fluid" style="width:100%; height:100%; padding-right:0px; padding-left:0px;">
+<div class="navbar navbar-default">
+  <div class="navbar-inner" style="border-radius: 0px"> 
+    <div class="container">
+      <a class="brand" href='http://1.227.166.166:9132/monitoring/klis/klis_portal_temp.html'>Korea Land surface Information System</a>
+      <ul class="nav" >
+        <li class="divider-vertical"></li>
+      </ul>
+	<li id="InteractiveInterface" class="active" style="display:none;"></li>
+        <ul class="nav pull-right">
+          <li class="divider-vertical"></li>
+		  <li id="feedbackBtn" class=""><a href='http://1.227.166.166:9132/monitoring/data.html'>HOME</a></li>
+        <li class="divider-vertical"></li>
+        <li id="feedbackBtn"><a href='http://1.227.166.166:9132/monitoring/klis/WHAP_Portal_temp.html'>가뭄</a></li>
+        <li class="divider-vertical"></li>
+        <li><a href='#'>홍수</a></li>
+      	<li class="divider-vertical"></li>
+		<li id="feedbackBtn"><a href='#'>건천화</a></li>
+        <li class="divider-vertical"></li>
+		<li id="feedbackBtn" class="active"><a href='#'>KLIS</a></li>
+        <li class="divider-vertical"></li>
+		<li id="feedbackBtn"><a href='#'>세계 지형도</a></li>
+        <li class="divider-vertical"></li>
+          <li id="feedbackBtn"><a href='#'>Feedback</a></li>
+	  <li class="divider-vertical"></li>
+        </ul>
+    </div>
+  </div>
+</div>
+<div class="row-fluid" style="width:100%; position: absolute; bottom: 0px; top:40px;">
+	<div id="cesiumContainer">
+	<button class="infoBtn infoBtn_s btn btn-primary">Data Info..</button>
+	<button class="infoBtn infoBtn_h btn btn-default" style="display:none;">Hide Info..</button>
+		<div id="infobox" style="display:none; top:10px;">
+			<div id="noInfo" class="noInfobar" style="display:block;top: 105px;height: 45px;"> Nothing to display </div>
+			<div id="MetaTable" class="cbar" style="top: 105px;height: 140px;display: none;">
+				<table style="width:100%;">
+					<tbody><tr>
+						<th>INPUT_DATA</th>
+						<td>SOIL MOISTURE</td>
+					</tr>
+					<tr>
+						<th>OUTPUT_DATA</th>
+						<td>SOIL MOISTURE INDEX</td>
+					</tr>
+					<tr>
+						<th>VALUE_RANGE</th>
+						<td>0~5, -999(NAN)</td>
+					</tr>
+					<tr>
+						<th>SPATIAL_RANGE</th>
+						<td>LONG: 124º~132º</td>
+					</tr>
+					<tr>
+						<th>SPATIAL_RESOLUTION</th>
+						<td>0.01 Degree</td>
+					</tr>
+				</tbody></table>
+			</div>
+			<div id="colorbar" class="cbar" style="top:272px;display: none;">
+				<b>Scale<br>
+				<table style="width: 100%;">
+					<tbody><tr>
+						<td><u>Color</u></td>
+						<td><u>Range</u></td>
+					</tr>
+					<tr>
+						<td style="background-color: #cffbd1;border: 1px solid white;color: black;">&gt;30</td>
+						<td id="ctablab9">정상상태</td>
+					</tr>
+					<tr>
+						<td style="background-color: #fdfbce;border: 1px solid white;color: black;">20-30</td>
+						<td id="ctablab8">약한가뭄</td>
+					</tr>
+					<tr>
+						<td style="background-color: #fef858;border: 1px solid white;color: black;">10-20</td>
+						<td id="ctablab7">보통가뭄</td>
+					</tr>
+					<tr>
+						<td style="background-color: #fcc147;border: 1px solid white;color: black;">5-10</td>
+						<td id="ctablab6">심한가뭄</td>
+					</tr>
+					<tr>
+						<td style="background-color: #fc8739;border: 1px solid white;color: black;">2-5</td>
+						<td id="ctablab5">매우가뭄</td>
+					</tr>
+					<tr>
+						<td style="background-color: #ff4b25;border: 1px solid white;color: black;">&lt 2</td>
+						<td id="ctablab4">극심한가뭄</td>
+					</tr>
+				</tbody></table>
+			</div>
+			<div id="colorbar" class="cbar" style="top:500px;display: none;">
+				<b>Index Chart<br>
+				<img src="klis/img/20170501.index.chart.png" width=220>
+			</div>
+		</div>
+		<div id="dateTxt" class="text_border" style="position: absolute; z-index: 999; font-size: 20px; color: #fff; margin-left: 36%; margin-top: 10px;"></div>
+	</div>
+	
+    <div class="row" style="width:80%;">
+      <div id="sidebar1" class="span3 scrollDiv" style="visibility:visible; padding-right:0; position: absolute; top: 0px; background-color: rgb(240,240,240); width: 21%; min-width:335px; right:0px; bottom: 0px;">
+        <ul class="nav nav-list" data-spy="affix" data-offset-top="900">
+  
+			<div class="row">
+				<ol class="breadcrumb" style="margin:0px;">
+				  <a href="http://1.227.166.166:9132/monitoring/klis/klis_portal_temp.html"><button id="KLDAS" class="btn btn-default" style="width:85px;margin-left:4px;">KLDAS</button></a>
+				  <button id="ALDAS" class="btn btn-primary" style="width:85px;" disabled>ALDAS</button>
+				  <input type="checkbox" id="toggle-two" data-toggle="toggle" data-on="CompareOn" data-off="CompareOff" disabled>
+				</ol>
+			</div>
+		    <div id="TimeIntervaldum" class="dummy">
+			    <li id="TimeInterval" class="nav-header" style="font-size:13px;">일자 선택</li>
+			    <div class="data-form-block">
+			  	  <form id="AnimationForm" name="AnimationForm">
+			  		<br>
+			  		<div id="initial-date-inputs" class="control-group form-inline">
+			  		  <label style="width:55px;font-size: 12px;">시작일:</label>
+			  		  <input id="year_initial" type="text" maxlength="4" name="year_initial" value=2011 style="width:50px;">
+			  		  <input id="month_initial" type="text" maxlength="2" name="month_initial" value=1 style="width:30px;">
+			  		  <input id="day_initial" type="text" maxlength="2" name="day_initial" value=1 style="width:30px;">
+			  		  <input type="button" value="-" class="btn btn-mini" onclick="Update_TimeStamp_MP(-1,0)">
+			  		  <input type="button" value="+" class="btn btn-mini" onclick="Update_TimeStamp_MP(1,0)">
+			  		</div>
+			  		<div id="final-date-inputs" class="control-group form-inline">
+			  		  <label style="width:55px;font-size: 12px;">종료일:</label>
+			  		  <input id="year_final" type="text" maxlength="4" name="year_final" value=2011 style="width:50px;">
+			  		  <input id="month_final" type="text" maxlength="2" name="month_final" value=1 style="width:30px;">
+			  		  <input id="day_final" type="text" maxlength="2" name="day_final" value=4 style="width:30px;">
+			  		  <input type="button" value="-" class="btn btn-mini" onclick="Update_TimeStamp_MP(-1,1)">
+			  		  <input type="button" value="+" class="btn btn-mini" onclick="Update_TimeStamp_MP(1,1)"><br/>
+			  		</div>
+			  		<!-- <span style="position: absolute; margin-top: -70px; margin-left: 215px;"> -->
+			  			<!-- <button class="btn btn-large btn-success" style="line-height: 35px; width: 65px;">ok</button> -->
+			  		<!-- </span> -->
+			  	  <!-- <table id="Animation-Update"><tr> -->
+			  	  <!-- <td><input id="update_interval" type="button" class="btn" value=Update ></td> -->
+			  	  <!-- <td><input id="clear_all" type="button" class="btn" value=Clear ></td> -->
+			  	  <!-- </tr> -->
+			  	  <!-- </table> -->
+			  	  </form>
+			  	  <div style="margin-left:230px; margin-top:-30px">
+			  		  <span style="padding-left:10px"><i id="pause-or-continue" class="glyphicon glyphicon-play"></i></span>
+			  		  <span style="padding-left:10px"><i id="autoplay-stop" class="glyphicon glyphicon-stop"></i></span>
+			  	  </div>
+			    </div>
+		    </div>
+			
+			<div id="Models" class="dummy">
+			  <li class="divider"></li>
+			  <li id=Models class="nav-header expandable" style="font-size:13px;">
+				  분석 모형      <!--<a id=Hydrology href="#" data-toggle="popover"><img class="question_mark" src="icons/question_icon.png"></a>-->
+				  <b class="caret centeredcaret"></b>
+			  </li>
+				<p></p>	<!-- margin용 -->
+			  <div class="data-form-block">
+				<span class="d-inline-block" tabindex="0" data-toggle="tooltip" title="Click to show MetaData">
+					<button class="btn btn-sm btn-default">NoahMP-HyMap</button>
+				</span>
+				<span><button class="btn btn-sm btn-default">Catchment-Hymap</button></span>
+			  </div>
+			</div>
+			
+			<div id="Variable" class="dummy">
+			  <li class="divider"></li>
+			  <li id=Variables class="nav-header expandable" style="font-size:13px;">
+				  분석 인자      <!--<a id=Hydrology href="#" data-toggle="popover"><img class="question_mark" src="icons/question_icon.png"></a>-->
+				  <b class="caret centeredcaret"></b>
+			  </li>
+				<p></p>	<!-- margin용 -->
+			  <div class="data-form-block">
+			  <ul class="nav nav-list datalist">
+					  <!-- <li class="dropdown"> -->
+						<!-- <a id=vc1 data-toggle="dropdown" href="javascript:void(0)"><i></i> -->
+						  <!-- Energy Balance Components         <b class="caret"></b> -->
+						<!-- </a> -->
+						<!-- <ul class="dropdown-menu"> -->
+							<!-- <li class="nav-header">Data(GeoTiff)</li> -->
+							<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>Swnet - Netshortwaveradiation</a></li> -->
+							<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>Lwnet - Netlongwaveradiation</a></li> -->
+							<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>Qle - Latentheatflux</a></li> -->
+							<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>Qh - Sensibleheatflux</a></li> -->
+							<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>Qg - Groundheatflux</a></li> -->
+						<!-- </ul> -->
+					  <!-- </li> -->
+					<li class="dropdown">
+						<a id=vc2 data-toggle="dropdown" href="javascript:void(0)"><i></i>
+						  Water Balance Components          <b class="caret"></b>
+						</a>
+						<ul class="dropdown-menu">
+							<li class="nav-header">Data(GeoTiff)</li>
+							<!-- <li><a id="WaterBalance--components" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>Snowf - Snowfallrate</a></li> -->
+							<li><a id="WaterBalance--components" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>Rainf - Rainfallrate</a></li>
+							<li><a id="WaterBalance--components" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>TotalPrecip - Totalprecipitationrate</a></li>
+							<li><a id="WaterBalance--components" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>Evap - Totalevapotranspiration</a></li>
+							<li><a id="WaterBalance--components" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>Qs - Surfacerunoff</a></li>
+							<li><a id="WaterBalance--components" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>Qsb - Subsurfacerunoff</a></li>
+							<!-- <li><a id="WaterBalance--components" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>Qsm - Snowmelt</a></li> -->
+							<!-- <li><a id="WaterBalance--components" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>DelSoilMoist - Changeinsoilmoisture</a></li> -->
+							<!-- <li><a id="WaterBalance--components" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>DelSurfStor - Change in surface water storage </a></li> -->
+						</ul>
+					</li>
+					<li class="dropdown">
+					<a id=soilm data-toggle="dropdown" href="javascript:void(0)"><i></i>
+					  Surface state variables          <b class="caret"></b>
+					</a>
+					<ul class="dropdown-menu">
+					  <li class="nav-header">Data(GeoTiff)</li>
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>SnowT - Snowsurfacetemperature</a></li> -->
+								<li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>VegT - Vegetationcanopytemperature</a></li>
+								<li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>AvgSurfT - Averagesurfacetemperature</a></li>
+								<li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>Albedo - Surfacealbedo</a></li>
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>SWE - SnowWaterEquivalent</a></li> -->
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>SWEVeg - SWEinterceptedbyvegetation</a></li> -->
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>SurfStor - Surfacewaterstorage</a></li> -->
+					</ul>
+					</li>
+					  <li class="dropdown">
+					<a id=evap data-toggle="dropdown" href="javascript:void(0)"><i></i>
+					  Subsurface state variables          <b class="caret"></b>
+					</a>
+					<ul class="dropdown-menu">
+					  <li class="nav-header">Data(GeoTiff)</li>
+								<li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>SoilMoist - Averagelayersoilmoisture</a></li>
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>SoilTemp - Averagelayersoiltemperature</a></li> -->
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>SoilWet - Totalsoilwetness</a></li> -->
+					</ul>
+					</li>
+					  <li class="dropdown">
+					<a id=eto data-toggle="dropdown" href="javascript:void(0)"><i></i>
+					  Evaporation components          <b class="caret"></b>
+					</a>
+					<ul class="dropdown-menu">
+					  <li class="nav-header">Data(GeoTiff)</li>
+								<!-- <li><a id="prec--PGF" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>PotEvap - Potentialevapotranspiration</a></li> -->
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>ECanop - Interceptionevaporation</a></li> -->
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>TVeg - Vegetationtranspiration</a></li> -->
+								<li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>ESoil - Baresoilevaporation</a></li>
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>EWater - Openwaterevaporation</a></li> -->
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>RootMoist - Rootzonesoilmoisture</a></li> -->
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>CanopInt - Totalcanopywaterstorage</a></li> -->
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>SubSnow - Snowsublimation</a></li> -->
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>SoilET - Soilevaporation </a></li> -->
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>TWS - Terrestrialwaterstorage</a></li> -->
+					</ul>
+					</li>
+					  <li class="dropdown">
+					<a id=runoff data-toggle="dropdown" href="javascript:void(0)"><i></i>
+					  Cold season processes          <b class="caret"></b>
+					</a>
+					<ul class="dropdown-menu">
+					  <li class="nav-header">Data(GeoTiff)</li>
+								<li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>Snowcover - Snowcover</a></li>
+								<li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>SnowDepth - Snowdepth</a></li>
+					</ul>
+					</li>
+					  <!-- <li class="dropdown"> -->
+						<!-- <a id=baseflow data-toggle="dropdown" href="javascript:void(0)"><i></i> -->
+						  <!-- Forcings          <b class="caret"></b> -->
+						<!-- </a> -->
+						<!-- <ul class="dropdown-menu"> -->
+							<!-- <li class="nav-header">Data(GeoTiff)</li> -->
+							<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>Wind_f - Nearsurfacewind</a></li> -->
+							<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>Rainf_f - Averagerainfallrate </a></li> -->
+							<!-- <!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>Snowf_f - Averagesnowfallrate </a></li> -->
+							<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>Tair_f - Nearsurfaceairtemperature </a></li> -->
+							<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>Qair_f - Nearsurfacespecifichumidity </a></li> -->
+							<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>Psurf_f - Surfacepressure </a></li> -->
+							<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>SWdown_f - Surfaceincidentshortwaveradiation </a></li> -->
+							<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>LWdown_f - Surfaceincidentlongwaveradiation </a></li> -->
+						<!-- </ul> -->
+					  <!-- </li> -->
+					  <!-- <li class="dropdown"> -->
+					<!-- <a id=flw data-toggle="dropdown" href="javascript:void(0)"><i></i> -->
+					  <!-- VIC PET output          <b class="caret"></b> -->
+					<!-- </a> -->
+					<!-- <ul class="dropdown-menu"> -->
+					  <!-- <li class="nav-header">Data(GeoTiff)</li> -->
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i> -->
+								<!-- vic_pet_satsoil: - Potentialevapfromsaturatedbaresoil  </a></li> -->
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i></i>vic_pet_h2osurf: - Potentialevapfromopenwater  </a></li> -->
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>vic_pet_short: - Potentialevap(transpirationonly)fromshortreferencecrop  </a></li> -->
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>vic_pet_tall: - Potentialevap(transpirationonly)fromtallreferencecrop  </a></li> -->
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>vic_pet_natveg: - Potentialevap(transpirationonly)fromcurrentvegetationand </a></li> -->
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>>vic_pet_vegnocr: - Potentialevap(transpirationonly)fromcurrentvegetationand  </a></li> -->
+							  <!-- </ul> -->
+				  <!-- </li> -->
+				  <li class="dropdown">
+					<a id=flw data-toggle="dropdown" href="javascript:void(0)"><i></i>
+					  Routing          <b class="caret"></b>
+					</a>
+					<ul class="dropdown-menu">
+					  <li class="nav-header">Data(GeoTiff)</li>
+								<li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>Streamflow - Streamflow </a></li>
+								<li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>RiverStor - Riverwaterstorage </a></li>
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>RiverDepth - Riverdepth </a></li> -->
+								<li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>RiverVelocity - Riverflowvelocity </a></li>
+								<li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>FloodQ - Floodplainwaterdischarge </a></li>
+								<li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>FloodStor - Floodplainwaterstorage </a></li>
+								<li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>FloodDepth - Floodplaindepth </a></li>
+								<li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>FloodVelocity - Floodplainflowvelocity </a></li>
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>FloodedFrac - Floodedfraction  </a></li> -->
+								<li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>FloodedArea - Floodedarea </a></li>
+								<li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>SurfElev - Surfacewaterelevation </a></li>
+								<li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>RunoffStor - Runoffreservoirstorage </a></li>
+								<!-- <li><a id="vc1--VIC_DERIVED" href="javascript:void(0)"><i class="icon-plus-sign" style="color:#5cb85c"></i>BaseflowStor - Baseflowreservoirstorage </a></li> -->
+							  </ul>
+				  </li>
+				  </ul>
+			  </div>
+			  </div>
+			<div id="Datas" class="dummy">
+				<li class="divider"></li>
+				<li id=Meteorology class="nav-header expandable" style="font-size:13px;">
+				  데이터      <!--<a id=Meteorology href="#" data-toggle="popover"><img class="question_mark" src="icons/question_icon.png"></a>-->
+				  <b class="caret centeredcaret"></b>
+				</li>
+				<div class="data-form-block">
+					<br>
+					<select class="input-large form-control" style="width:295px;font-size:12px;">
+						<option value="" selected="selected">Select a Data</option>
+						<option value="AL">MERRA2_400.tavg1_2d_int_Nx.20110101</option>
+						<option value="AK">MERRA2_400.tavg1_2d_int_Nx.20110102</option>
+						<option value="AZ">MERRA2_400.tavg1_2d_int_Nx.20110103</option>
+						<option value="AR">MERRA2_400.tavg1_2d_int_Nx.20110104</option>
+					</select>
+					<div style="width:295px;text-align:center;margin-bottom:10px;"> 
+					  <span class="btn btn-primary btn-lg" style="width:295px;"><i class="glyphicon glyphicon-download-alt"></i> Download it</span>
+					</div>
+				</div>
+				<li class="divider"></li>
+			</div>		
+
+		</ul>
+	  </div>      
+     
+   </div>
+</div>
+<script type="text/javascript" src="klis/js/cesium_klis_setLayer.js"></script>
+</body>
+</html>
+
